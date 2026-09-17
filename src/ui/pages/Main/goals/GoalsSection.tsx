@@ -21,7 +21,13 @@ export default function GoalsSection() {
   useEffect(() => {
     async function fetch() {
       const goals = await getGoals()
-      goals?.forEach((goal) => dispatch(createGoalRedux(goal)))
+      // The shared demo backend accumulates goals from every user of this
+      // simulation, so only render the most recently created ones.
+      const recentGoals = goals
+        ?.slice()
+        .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime())
+        .slice(0, 20)
+      recentGoals?.forEach((goal) => dispatch(createGoalRedux(goal)))
     }
     fetch()
   }, [dispatch])
